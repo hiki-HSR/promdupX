@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import PromptForm from "@/components/PromptForm";
 import SimilarityWarning from "@/components/SimilarityWarning";
@@ -50,9 +51,15 @@ export default function Home() {
           <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 mb-4">
             AI Prompt Duplication Checker
           </h1>
-          <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
+          <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-6">
             Verify the originality of your AI prompts against our academic submission database to ensure integrity.
           </p>
+          <Link
+            href="/prompts"
+            className="text-sm font-medium text-zinc-900 underline decoration-zinc-400 underline-offset-4 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            View Submitted Prompts &rarr;
+          </Link>
         </div>
 
         <div className="bg-white dark:bg-zinc-900 p-8 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800">
