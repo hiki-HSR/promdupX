@@ -11,7 +11,19 @@ export default function SimilarityWarning({
   maxScore,
 }: SimilarityWarningProps) {
   if (!warning) {
-    return null;
+    return (
+      <div className="w-full rounded-md border border-green-200 bg-green-50 p-4 text-green-900 dark:border-green-800 dark:bg-green-950/30 dark:text-green-200">
+        <h3 className="mb-2 font-semibold">No Duplication Detected</h3>
+        <p className="mb-2 text-sm">
+          Your prompt appears to be original based on our current database.
+        </p>
+        {maxScore !== undefined && (
+          <p className="text-sm font-medium">
+            Similarity Score: {maxScore.toFixed(2)}
+          </p>
+        )}
+      </div>
+    );
   }
 
   return (

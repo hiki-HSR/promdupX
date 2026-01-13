@@ -16,29 +16,25 @@ export default function Home() {
   const handleCheck = async (prompt: string) => {
     setLoading(true);
     try {
-      // Mock database of existing prompts for demonstration
-      const mockExistingPrompts = [
-        "Explain the significance of the industrial revolution.",
-        "Write a poem about artificial intelligence in the style of Shakespeare.",
-        "Summarize the main themes of To Kill a Mockingbird.",
-        "Create a javascript function to sort an array of objects.",
-      ];
-
       const response = await fetch("/api/similarity", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           newPrompt: prompt,
-          existingPrompts: mockExistingPrompts,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
         setResult(data);
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Server returned error:", response.status, errorData);
+        alert(`Failed to check similarity: ${errorData.error || "Check server logs."}`);
       }
     } catch (error) {
       console.error("Error checking similarity:", error);
+      alert("An error occurred while checking similarity.");
     } finally {
       setLoading(false);
     }

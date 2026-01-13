@@ -1,10 +1,28 @@
-import { supabase } from "@/lib/db";
+import { createClient } from "@supabase/supabase-js";
+import Link from "next/link";
 import PromptList from "@/components/PromptList";
 import type { Prompt } from "@/types/prompt";
 
 export const dynamic = "force-dynamic";
 
 export default async function PromptsPage() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error("Supabase environment variables are missing.");
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center p-8">
+        <p className="text-red-500">Error: Supabase configuration is missing.</p>
+      </main>
+    );
+  }
+
+  const supabase = createClient(
+    supabaseUrl,
+    supabaseAnonKey
+  );
+
   const { data: prompts, error } = await supabase
     .from("prompts")
     .select("*")
@@ -29,6 +47,11 @@ export default async function PromptsPage() {
           <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
             Review the repository of AI prompts submitted for academic integrity checks.
           </p>
+          <div className="mt-4">
+            <Link href="/" className="text-sm font-medium text-zinc-900 underline decoration-zinc-400 underline-offset-4 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100">
+              &larr; Back to Checker
+            </Link>
+          </div>
         </div>
 
         {prompts && prompts.length > 0 ? (

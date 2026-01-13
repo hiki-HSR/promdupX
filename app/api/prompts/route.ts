@@ -1,16 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
+import { computeSimilarity } from "@/lib/similarity";
 
-// Initialize Supabase client with Service Role Key for server-side operations
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export const runtime = "edge";
 
 const SIMILARITY_THRESHOLD = 0.8;
 
@@ -33,6 +26,12 @@ export async function POST(req: Request) {
       );
     }
 
+    // Initialize Supabase client
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
     // 1. Fetch all existing prompts to build the corpus
     const { data: existingPrompts, error: fetchError } = await supabase
       .from("prompts")
@@ -48,25 +47,40 @@ export async function POST(req: Request) {
     // 2. Compute similarity using OpenAI Embeddings
     let maxScore = 0;
 
-    if (existingPrompts && existingPrompts.length > 0) {
-      // Generate embedding for the new prompt
-      const inputResponse = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: content,
-      });
-      const inputVector = inputResponse.data[0].embedding;
+    const corpus = existingPrompts?.map((p) => p.content) || [];
 
-      // Generate embeddings for existing prompts (Batch)
-      // Note: In production, use pgvector to store and query embeddings efficiently.
-      const corpus = existingPrompts.map((p) => p.content);
-      const corpusResponse = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: corpus,
-      });
+    if (process.env.OPENAI_API_KEY && existingPrompts && existingPrompts.length > 0) {
+      try {
+        const openai = new OpenAI({
+          apiKey: process.env.OPENAI_API_KEY,
+        });
 
-      for (const item of corpusResponse.data) {
-        const score = cosineSimilarity(inputVector, item.embedding);
-        if (score > maxScore) maxScore = score;
+        const inputResponse = await openai.embeddings.create({
+          model: "text-embedding-3-small",
+          input: content,
+        });
+        const inputVector = inputResponse.data[0].embedding;
+
+        const corpusResponse = await openai.embeddings.create({
+          model: "text-embedding-3-small",
+          input: corpus,
+        });
+
+        for (const item of corpusResponse.data) {
+          const score = cosineSimilarity(inputVector, item.embedding);
+          if (score > maxScore) maxScore = score;
+        }
+      } catch (error) {
+        console.warn("OpenAI API failed, falling back to local algorithm:", error);
+        // Fallback logic below
+      }
+    }
+
+    // Fallback if maxScore is still 0 (API failed or key missing) but we have prompts
+    if (maxScore === 0 && corpus.length > 0) {
+      const localResults = computeSimilarity(content, corpus);
+      if (localResults.length > 0) {
+        maxScore = localResults[0].score;
       }
     }
 
@@ -91,6 +105,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ saved: true, warning: false });
   } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    console.error("Error in prompt submission:", error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
