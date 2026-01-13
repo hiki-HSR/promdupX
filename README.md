@@ -1,54 +1,36 @@
- 🧠 Prompt Share
-### AI 프롬프트 중복 방지를 위한 협업 관리 플랫폼
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
----
+## Getting Started
 
-## 📌 프로젝트 개요
+First, run the development server:
 
-**Prompt Share**는 대학 수업에서 AI를 활용한 과제를 수행할 때,  
-조원 또는 수강생 간 **AI 프롬프트 중복 사용을 방지**하기 위해 제작된 웹 서비스입니다.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-단순 문자열 비교가 아닌, **의미 유사도 기반 분석**을 통해  
-프롬프트의 실질적인 겹침 여부를 사전에 확인할 수 있도록 설계되었습니다.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-> 🎯 목표  
-> AI 사용을 제한하는 것이 아니라,  
-> **공정하고 투명한 AI 활용 환경을 제공**하는 것입니다.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
----
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## ✨ 주요 기능
+## Learn More
 
-### ✅ 프롬프트 등록
-- 과제에 사용한 AI 프롬프트 입력
-- 팀명 / 사용자명 태그
-- 프롬프트 목록 공유
+To learn more about Next.js, take a look at the following resources:
 
-### ✅ 프롬프트 중복·유사도 검사 (핵심 기능)
-- 기존 프롬프트와 **의미 유사도 계산**
-- 유사도 기준 초과 시 경고 표시
-- 등록 전 사전 검사 가능
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### ✅ 프롬프트 목록 조회
-- 전체 프롬프트 리스트 확인
-- 중복 위험 프롬프트 시각적 표시
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
----
+## Deploy on Vercel
 
-## 🧠 유사도 판별 방식
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-본 프로젝트는 **Vercel 서버리스 환경**에 최적화된 방식으로  
-프롬프트 유사도를 계산합니다.
-
-### 🔹 기본 방식
-- TF-IDF 벡터화
-- Cosine Similarity 계산
-- 기준값 예시: `0.75 이상 → 유사 프롬프트`
-
-### 🔹 확장 가능 설계
-- OpenAI Embedding API 등 외부 임베딩 모델로 교체 가능
-- 의미 기반 유사도 분석으로 확장 가능
-
----
-
-## 🏗️ 시스템 아키텍처
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
