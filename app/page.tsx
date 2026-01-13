@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import PromptForm from "@/components/PromptForm";
 import SimilarityWarning from "@/components/SimilarityWarning";
+import { submitPrompt } from "./actions";
 
 export default function Home() {
   const [result, setResult] = useState<{
@@ -27,6 +28,21 @@ export default function Home() {
       if (response.ok) {
         const data = await response.json();
         setResult(data);
+
+        // 검사 성공 시 자동으로 Supabase에 저장
+        const saveResult = await submitPrompt(prompt, undefined, undefined, data.maxScore);
+        if (!saveResult.success) {
+          console.error("Auto-save failed:", saveResult.error);
+
+          // 이미 DB에 존재하는 프롬프트라면 화면에도 중복으로 표시
+          if (saveResult.error === "이미 제출된 프롬프트입니다.") {
+            setResult({
+              maxScore: 1.0,
+              warning: true,
+              results: [{ prompt: "Exact match found in database.", score: 1.0 }],
+            });
+          }
+        }
       } else {
         const errorData = await response.json().catch(() => ({}));
         console.error("Server returned error:", response.status, errorData);

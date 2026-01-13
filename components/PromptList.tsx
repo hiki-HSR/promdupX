@@ -12,8 +12,24 @@ export default function PromptList({ prompts }: PromptListProps) {
           key={prompt.id}
           className="flex flex-col rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:bg-zinc-800/50"
         >
-          <div className="mb-4 whitespace-pre-wrap text-sm text-zinc-800 dark:text-zinc-200">
-            {prompt.content}
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <div className="whitespace-pre-wrap text-sm text-zinc-800 dark:text-zinc-200">
+              {prompt.content}
+            </div>
+            {typeof prompt.similarity_score === "number" && (
+              <div
+                className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium ${
+                  prompt.similarity_score > 0.75
+                    ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400"
+                    : "border-green-200 bg-green-50 text-green-700 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400"
+                }`}
+              >
+                {prompt.similarity_score > 0.75 ? "High Similarity" : "Original"}
+                <span className="ml-1 opacity-75">
+                  ({(prompt.similarity_score * 100).toFixed(0)}%)
+                </span>
+              </div>
+            )}
           </div>
           <div className="mt-auto flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
             <div className="flex gap-3">
