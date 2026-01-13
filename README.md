@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PromdupX: AI Prompt Integrity Checker
+
+This is a Next.js project designed to check the integrity and originality of AI prompts.
 
 ## Getting Started
 
